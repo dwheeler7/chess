@@ -168,6 +168,11 @@ const colors = {
     "-1": "#58D68D"
 }
 
+const colorLabels = {
+    "1": "black",
+    "-1": "white"
+}
+
 const pieces = [new Pawn(-1),new Pawn(-1),new Pawn(-1),new Pawn(-1),new Pawn(-1),new Pawn(-1),new Pawn(-1),new Pawn(-1),new Rook(-1),new Bishop(-1),new Knight(-1),new King(-1),new Queen(-1),new Knight(-1),new Bishop(-1),new Rook(-1),new Pawn(1),new Pawn(1),new Pawn(1),new Pawn(1),new Pawn(1),new Pawn(1),new Pawn(1),new Pawn(1),new Rook(1),new Bishop(1),new Knight(1),new Queen(1),new King(1),new Knight(1),new Bishop(1),new Rook(1)];
 
 // State variables
@@ -183,13 +188,26 @@ const scoreWhtEl = document.getElementById("wht-score");
 const scoreLabelWhtEl = document.getElementById("wht-score-label");
 const scoreBlkEl = document.getElementById("blk-score");
 const scoreLabelBlkEl = document.getElementById("blk-score-label");
+const alertEl = document.getElementById("alert");
 // const restartBtnEl = document.getElementById("restart-btn");
 // const turnLabelEl = document.getElementById("turn-label");
 
 // CONTROLLER
 
 const error = msg => {
-    console.log(`illegal move: ${msg}`)
+    
+    updateAlert(`Illegal move. ${msg}`)
+    alertEl.classList.add("alert--err");    
+    setTimeout(() => {
+        let turnLabel;
+        if (turn === 1) {        
+            turnLabel = "It's black's turn."        
+        } else {
+            turnLabel = "It's white's turn."
+        };        
+        updateAlert(turnLabel);
+    }, 4000)
+    
 }
 
 getPiecePosition = piece => {
@@ -235,11 +253,16 @@ const validateCheck = () => {
         cnt.pieceColNum = piece[0];
         cnt.pieceRowNum = piece[1];
         if (checkMove(cnt, kingPosition[0], kingPosition[1])) {
-            console.log("puts in check")
+            error("This move puts you in check.")
             return true
         }
     }
     return false
+}
+
+const updateAlert = text => {
+    alertEl.classList.remove("alert--err");
+    alertEl.innerText = text;
 }
 
 function render() {
@@ -252,11 +275,16 @@ function render() {
         if (boardArrItem) spaceElsArr[i].innerHTML = boardArrItem.img;                       
     }
     changeScore();
+    let turnLabel;
+    if (turn === 1) {
+        turnLabel = "It's black's turn."        
+    } else turnLabel = "It's white's turn."
+    updateAlert(turnLabel);
 }
 
 const selectPiece = (controller, space, colIdx, rowIdx, target) => {
   if (!space || space.player != turn) {
-      error("player selected no piece or opponent's piece");        
+      error(`Pick up a ${colorLabels[turn]} piece.`);        
       return
     }    
     target.classList.add("board__space--highlight");
@@ -272,7 +300,7 @@ const checkMove = (controller, colIdx, rowIdx, target) => {
             target.classList.remove("board__space--highlight");
             return
         }
-        error("same player");
+        error(`You can't take your own piece.`);
         return false
     }     
     const xDelta = colIdx - controller.pieceColNum;
@@ -283,11 +311,11 @@ const checkMove = (controller, colIdx, rowIdx, target) => {
         } else if (Math.abs(xDelta) === Math.abs(yDelta)) {
             controller.direction = "diagonal";            
         } else {
-            error(`${controller.piece.name} must move in ${controller.piece.moves.dyanamic.join(" or ")} direction`);
+            error(`The ${controller.piece.name} must move in ${controller.piece.moves.dyanamic.join(" or ")} direction.`);
             return false
         }
         if (controller.piece.moves.dyanamic.indexOf(controller.direction) === -1) {
-            error(`${controller.piece.name} can't move ${controller.direction}ly`);
+            error(`The ${controller.piece.name} can't move ${controller.direction}ly.`);
             return false
         }
         const xSign = Math.sign(xDelta);
@@ -295,7 +323,7 @@ const checkMove = (controller, colIdx, rowIdx, target) => {
         for (let i = 1; i < (Math.abs(xDelta) || Math.abs(yDelta)); i++) {
             const iteration = [(controller.pieceColNum + (i * xSign)),(controller.pieceRowNum + (i * ySign))]            
             if (board[iteration[0]][iteration[1]]) {
-                error("there's a piece in the way");
+                error("There's a piece in the way.");
                 return false
             }
         }               
@@ -304,15 +332,15 @@ const checkMove = (controller, colIdx, rowIdx, target) => {
         for (let move of controller.piece.moves.static) {            
             if ((move.xDelta === (xDelta * turn)) && (move.yDelta === yDelta * turn)) {                
                 if (move.firstMove && controller.piece.movesNum) {
-                    error(`${controller.piece.name} can only make this move on the first move`);
+                    error(`The ${controller.piece.name} can only make this move on the first move.`);
                     return false
                 }
                 if (move.mustTake && !board[colIdx][rowIdx]) {
-                    error(`${controller.piece.name} must take a piece to make this move`)
+                    error(`The ${controller.piece.name} must take a piece to make this move.`)
                     return false
                 }
                 if (move.mustNotTake && board[colIdx][rowIdx]) {
-                    error(`${controller.piece.name} can't take a piece making this move`)
+                    error(`The ${controller.piece.name} can't take a piece making this move.`)
                     return false
                 }
                 return true

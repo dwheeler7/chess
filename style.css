@@ -11,12 +11,14 @@ body {
     align-items: center;
     min-height: 100vh;
     background-color: whitesmoke;
+    position: relative;
 }
 
 .container {
     margin: auto;
     padding: 25px;
     max-width: 1000px;
+    position: relative;
 }
 
 .main {
@@ -64,11 +66,11 @@ body {
     display: grid;    
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;  
-    border: 2px solid brown;   
+    border: 3px solid #935116;   
 }
 
 .board__space--highlight {
-    background-color: blue !important;
+    background-color: #935116 !important;
 }
 
 .board > div {    
@@ -94,3 +96,25 @@ body {
     width: 90%;
     height: 90%;
 }
+
+.alert {
+    position: absolute;
+    padding: 8px 16px;    
+    font-size: 1.25em;
+    top: 2em;
+    right: 2em;
+    background-color: #3498DB;
+    border-radius: 2px;
+    color: white;
+}
+
+.alert--err {
+    background-color: #EC7063;
+}
+
+
+
+
+
+
+
