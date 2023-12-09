@@ -365,8 +365,8 @@ boardEl.addEventListener("click", e => {
     const boardArrItem = board[colIdx][rowIdx];
 
     if (currentMove.piece) {    
-        if (checkMove(currentMove, colIdx, rowIdx, target)) {
-            target.classList.remove("board__space--highlight");
+        if (checkMove(currentMove, colIdx, rowIdx, target)) {            
+            boardEls[((currentMove.pieceRowNum * 8) + currentMove.pieceColNum)].classList.remove("board__space--highlight");
             move(colIdx, rowIdx);
         }
     } else {        
